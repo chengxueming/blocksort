@@ -6,7 +6,7 @@
     var script = document.querySelector('.script');
     var ctx = canvas.getContext('2d');
     var WIDTH, HEIGHT, radius, length, center_x, center_y;
-    var arr, _arr, startPos ;
+    var _arr, startPos ;
     const width = 20; //the width of each rect
     const cell_height = 20;//one part of rect means that height
     const gap = 5;//the gap of each rect
@@ -97,6 +97,7 @@
         this.value = value;
     }
     function exchange(i ,j) {
+        console.log("exchange ", i, " and ", j);
         var m = arr[i];
         arr[i] = arr[j];
         arr[j] = m;
@@ -171,8 +172,17 @@
 
 	  onResize();
 	  clear();
-    main3();
-
+    function _exchange(block) {
+        var value =  Block.value(block);
+        for(var i = 0;i < value.length; i++) {
+            var ele = value[i];
+            if(Block.illegalVar(ele)) {
+                return false;
+            }
+        }
+        exchange(Block.realValue(value[0]), Block.realValue(value[1]));
+    }
+	  Menu.item('Exchange', _exchange, ["", ""]);
 	  script.addEventListener('beforeRun', clear, false); // always clear canvas first
 	  script.addEventListener('afterRun', drawRects, false); // show turtle if visible
 	  window.addEventListener('resize', onResize, false);

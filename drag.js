@@ -39,7 +39,7 @@
     }
 
     function dragOver(evt){
-        if (!matches(evt.target, '.menu, .menu *, .script, .script *, .content')) return;
+        if (!matches(evt.target, '.menu, .menu *, .script, .script *, .content ,.expr')) return;
         if (evt.preventDefault) { evt.preventDefault(); } // Necessary. Allows us to drop.
         if (dragType === 'menu'){
             evt.dataTransfer.dropEffect = 'copy';  // See the section on the DataTransfer object.
@@ -51,10 +51,11 @@
 
     function drop(evt){
         if (!matches(evt.target, '.menu, .menu *, .script, .script *')) return;
-        var dropTarget = closest(evt.target, '.script .container, .script .block, .menu, .script');
+        var dropTarget = closest(evt.target, '.script .container, .script .block, .menu, .script, .script .block .expr');
         var dropType = 'script';
         if (matches(dropTarget, '.menu')){ dropType = 'menu'; }
         if (evt.stopPropagation) { evt.stopPropagation(); } // stops the browser from redirecting.
+        //put right block code back to menu area
         if (dragType === 'script' && dropType === 'menu'){
             trigger('blockRemoved', dragTarget.parentElement, dragTarget);
             dragTarget.parentElement.removeChild(dragTarget);
@@ -65,12 +66,22 @@
                 dropTarget.insertBefore(dragTarget, dropTarget.firstChildElement);
             }
             trigger('blockMoved', dropTarget, dragTarget);
+        //put left menu item to script area
         }else if (dragType === 'menu' && dropType === 'script'){
             var newNode = dragTarget.cloneNode(true);
             newNode.classList.remove('dragging');
             if (matches(dropTarget, '.block')){
+                //if put a block on another block let the new become last of his sublings
                 dropTarget.parentElement.insertBefore(newNode, dropTarget.nextSibling);
-            }else{
+            }
+            else if(matches(dropTarget, ".expr")) {
+                console.log(dropTarget.parentElement);
+                dropTarget.parentElement.insertBefore(newNode, dropTarget);
+                var replaceChild = dropTarget.parentElement.removeChild(dropTarget); 
+            }
+            else{
+                //if put to the blank area like .container or the blank area of script, let it go there
+                console.log("drop to code not match block");
                 dropTarget.insertBefore(newNode, dropTarget.firstChildElement);
             }
             trigger('blockAdded', dropTarget, newNode);

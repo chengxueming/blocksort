@@ -25,6 +25,7 @@
 			scriptDirty = false;
 			Block.trigger('beforeRun', script);
 			var blocks = [].slice.call(document.querySelectorAll('.script > .block'));
+        Block.variable = {};
 			Block.run(blocks);
 			Block.trigger('afterRun', script);
 		}else{
@@ -43,14 +44,10 @@
 		elem.classList.remove('running');
 	}
 
-    function illegalVar(value) {
-        return typeof Block.realValue(value) == "undefined";
-    }
-
     function compare(opt, lv, rv) {
         lv = stringTrim(lv);
         rv = stringTrim(rv);
-        if(illegalVar(lv) || illegalVar(rv)) {
+        if(Block.illegalVar(lv) || Block.illegalVar(rv)) {
             console.log("compare illeagal param");
             return false;
         }
@@ -107,25 +104,33 @@
             }
         };
         value.lvalue = stringTrim(value.lvalue);
-        if(value.lvalue == "" || illegalVar(value.rvalue)) {
+        if(value.lvalue == "" || Block.illegalVar(value.rvalue)) {
             console.log("noting happend");
             return;
         }
         funcs[value.opt](value.lvalue, value.rvalue);
     }
 
+    function expr(block) {
+        
+    }
+
 	  menuItem('Repeat', repeat, 10, []);
     menuItem("If", inCase, {rvalue:"", lvalue:"", opt:">", opts:[">", "==", "<"]}, []);
     menuItem("RepeatIf", repeatIf, {rvalue:"", lvalue:"", opt:">", opts:[">", "==", "<"]}, []);
-    menuItem("Set", set, {rvalue:"", lvalue:"", opt:"=", opts:["=", "+", "-"]});
+    //for define a var or change the value of var
+    menuItem("Set", set, {rvalue:"", lvalue:"", opt:"=", opts:["=", "+=", "-="]});
+    //can return boolean(for if and repeatif) value for set
+    menuItem("Expr", expr, {rvalue:"", lvalue:"", opt:"=", opts:["+", "-", "and", "or", "<", "==", ">"]});
 
 	global.Menu = {
 		runSoon: runSoon,
 		item: menuItem
 	};
 
-	document.addEventListener('drop', runSoon, false);
+  document.querySelector('.run-action').addEventListener('click', runSoon, false);
+	//document.addEventListener('drop', runSoon, false);
 	script.addEventListener('run', runEach, false);
-	script.addEventListener('change', runSoon, false);
-	script.addEventListener('keyup', runSoon, false);
+	//script.addEventListener('change', runSoon, false);
+	//script.addEventListener('keyup', runSoon, false);
 })(window);
