@@ -48,5 +48,12 @@
     global.stringTrim = function(me) {
         return me.replace(/^\s+|\s+$/g,''); 
     }
+    global.sleep = function(ms) {
+        var start = new Date().getTime();
+        while(true)  if(new Date().getTime()-start > ms) break;
+        //return new Promise(resolve => setTimeout(resolve, ms));
+        //return setTimeout(function(){}, ms);
+    }
+
 
 })(window);

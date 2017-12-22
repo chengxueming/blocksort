@@ -23,7 +23,7 @@
 		    canvas.style.width = (WIDTH / PIXEL_RATIO) + "px"
 		    canvas.style.height = (HEIGHT / PIXEL_RATIO) + "px"
 		    if (evt){ 
-			      Menu.runSoon(); 
+			      //Menu.runSoon(); 
 		    }
 	  }
     function get_points() {

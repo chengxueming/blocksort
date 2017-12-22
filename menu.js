@@ -44,21 +44,6 @@
 		elem.classList.remove('running');
 	}
 
-    function compare(opt, lv, rv) {
-        lv = stringTrim(lv);
-        rv = stringTrim(rv);
-        if(Block.illegalVar(lv) || Block.illegalVar(rv)) {
-            console.log("compare illeagal param");
-            return false;
-        }
-        var compareFuncs = {
-            "<":function(lv, rv) {return Block.realValue(lv) < Block.realValue(rv);},
-            ">":function(lv, rv) {return Block.realValue(lv) > Block.realValue(rv);},
-            "==":function(lv, rv) {return Block.realValue(lv) == Block.realValue(rv);},
-        };
-        return compareFuncs[opt](lv, rv);
-    }
-
 	function repeat(block){
 		var count = Block.value(block);
 		var children = Block.contents(block);
@@ -68,8 +53,9 @@
 	}
     function inCase(block) {
         var value =  Block.value(block);
+        console.log(value);
 		    var children = Block.contents(block);
-        if(compare(value.opt, value.lvalue, value.rvalue)) {
+        if(Block.realValue(value)) {
             console.log("incase worked");
 			      Block.run(children);
         }
@@ -79,7 +65,7 @@
 		    var value = Block.value(block);
 		    var children = Block.contents(block);
         var count = 0;
-        while(compare(value.opt, value.lvalue, value.rvalue) && count < 1000) {
+        while(Block.realValue(value) && count < 1000) {
 			      Block.run(children);
             count++;
         }
@@ -90,16 +76,16 @@
 
     function set(block) {
         var value =  Block.value(block);
-        console.log(value);
+        console.log("set value is:", value);
         var funcs = {
             "=":function(lv, rv) {
                 console.log("= affect");
                 Block.variable[lv] = Block.realValue(rv);
             },
-            "+":function(lv, rv) {
+            "+=":function(lv, rv) {
                 Block.variable[lv] += Block.realValue(rv);
             },
-            "-":function(lv, rv) {
+            "-=":function(lv, rv) {
                 Block.variable[lv] -= Block.realValue(rv);
             }
         };
@@ -116,12 +102,13 @@
     }
 
 	  menuItem('Repeat', repeat, 10, []);
-    menuItem("If", inCase, {rvalue:"", lvalue:"", opt:">", opts:[">", "==", "<"]}, []);
-    menuItem("RepeatIf", repeatIf, {rvalue:"", lvalue:"", opt:">", opts:[">", "==", "<"]}, []);
+    //menuItem("If", inCase, {rvalue:"", lvalue:"", opt:">", opts:[">", "==", "<"]}, []);
+    menuItem("If", inCase, "", []);
+    menuItem("RepeatIf", repeatIf, "", []);
     //for define a var or change the value of var
     menuItem("Set", set, {rvalue:"", lvalue:"", opt:"=", opts:["=", "+=", "-="]});
     //can return boolean(for if and repeatif) value for set
-    menuItem("Expr", expr, {rvalue:"", lvalue:"", opt:"=", opts:["+", "-", "and", "or", "<", "==", ">"]});
+    menuItem("Expr", expr, {rvalue:"", lvalue:"", opt:"=", opts:["+", "-", "and", "or", "<", "==", ">", "<=", ">="]});
 
 	global.Menu = {
 		runSoon: runSoon,
